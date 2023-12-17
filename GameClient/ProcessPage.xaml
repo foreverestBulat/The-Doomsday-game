@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GameClient.ProcessPage"
+             Title="ProcessPage"
+             >
+    <Grid>
+
+        <StackLayout
+            HorizontalOptions="Center"
+            VerticalOptions="Start">
+            <ListView
+                x:Name="Players"
+                VerticalOptions="Start"
+                HorizontalOptions="Center"
+                HeightRequest="300"
+                WidthRequest="675">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <VerticalStackLayout>
+                                <HorizontalStackLayout>
+                                    <ImageButton
+                                        Clicked="FirstCardClicked"
+                                        x:Name="FirstCardXaml"
+                                        HeightRequest="300"
+                                        Source="loyaltycard.jpg"/>
+                                    <ImageButton
+                                        x:Name="Role"
+                                        HeightRequest="300"
+                                        Source="rolecard.jpg"
+                                        Clicked="RoleClicked"/>
+                                    <ImageButton
+                                        Clicked="SecondCardClicked"
+                                        x:Name="SecondCardXaml"
+                                        HeightRequest="300"
+                                        Source="loyaltycard.jpg"/>
+                                </HorizontalStackLayout>
+                                <Label
+                                    Text="{Binding ItemName}"/>
+                            </VerticalStackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+        
+        <ListView
+            VerticalOptions="Start"
+            HorizontalOptions="Start"
+            WidthRequest="200"
+            ItemsSource="{Binding Users}"
+            Background="#344343">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <HorizontalStackLayout
+                    Margin="5">
+                            <Label Margin="0,0,10,0" Text="{Binding ItemName}" TextColor="{Binding ItemColor}" />
+                            <Label Text="{Binding ItemIsYouMove}" />
+                        </HorizontalStackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+
+        <VerticalStackLayout
+            HorizontalOptions="Start"
+            VerticalOptions="Center">
+            <Label>Оружия</Label>
+            <ListView
+                VerticalOptions="Center"
+                HorizontalOptions="Start"
+                WidthRequest="400"
+                ItemsSource="{Binding Guns}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <HorizontalStackLayout
+                                Margin="0,10,0,0">
+                                <ImageButton
+                                    WidthRequest="300"
+                                    Source="{Binding NameImage}"/>
+                                <Label
+                                    WidthRequest="100"
+                                    HeightRequest="100"
+                                    Text="{Binding Name}"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center"/>
+                            </HorizontalStackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </VerticalStackLayout>
+
+
+        <VerticalStackLayout
+            VerticalOptions="Center"
+            HorizontalOptions="End">
+            <ListView
+                HeightRequest="500"
+                WidthRequest="400"
+                ItemsSource="{Binding Messages}"
+                Background="#344343">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Label Margin="5,5,5,5" Text="{Binding .}"/>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <HorizontalStackLayout>
+                <Entry
+                    x:Name="EntryMessage"
+                    Placeholder="Введите сообщение"
+                    HorizontalOptions="Center" />
+                <Button
+                    Text="Отправить"
+                    x:Name="SendMessage"
+                    Clicked="SendMessageClicked" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+        <VerticalStackLayout
+            VerticalOptions="End"
+            HorizontalOptions="Center"
+            HeightRequest="200"
+            WidthRequest="600"
+            Background="#344343">
+
+            <Label
+                HorizontalOptions="Center">
+                Ваши программы
+            </Label>
+            <Grid
+                HorizontalOptions="Center">
+                <HorizontalStackLayout>
+
+                </HorizontalStackLayout>
+            </Grid>
+
+            <Grid
+                HorizontalOptions="Center">
+                <HorizontalStackLayout>
+                    <VerticalStackLayout>
+                        <Label
+                            Text="{Binding LabelFirstCard}"
+                            HorizontalOptions="Center"/>
+                        <Image
+                            HorizontalOptions="Center"
+                            HeightRequest="300"
+                            Source="{Binding PathFirstCard}"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout>
+                        <Label
+                            Text="{Binding LabelRole}"
+                            HorizontalOptions="Center"/>
+                        <ImageButton
+                            Clicked="MyRoleClicked"
+                            HorizontalOptions="Center"
+                            HeightRequest="300"
+                            Source="{Binding PathImageRole}"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout>
+                        <Label
+                            HorizontalOptions="Center"
+                            Text="{Binding LabelSecondCard}"/>
+                        <Image
+                            HorizontalOptions="Center"
+                            HeightRequest="300"
+                            Source="{Binding PathSecondCard}"/>
+                    </VerticalStackLayout>
+
+
+                </HorizontalStackLayout>
+            </Grid>
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>
+
+
+
+
+<!--
+<ViewCell>
+    <VerticalStackLayout>
+        <HorizontalStackLayout>
+            <ImageButton 
+                                        x:Name="LoyaltyCard"
+                                        Source="loyaltycard.jpg"/>
+            <ImageButton 
+                                        x:Name="Role"
+                                        Source="rolecard.jpg"/>
+            <ImageButton 
+                                        x:Name="LoyaltyCard"
+                                        Source="loyaltycard.jpg"/>
+        </HorizontalStackLayout>
+        <Label/>
+    </VerticalStackLayout>
+</ViewCell>-->

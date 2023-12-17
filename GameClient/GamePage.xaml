@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GameClient.GamePage"
+             Title="GamePage">
+
+    <Grid>
+        <VerticalStackLayout
+            VerticalOptions="Center"
+            HorizontalOptions="Center">
+            <Label 
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                Text="Участники"/>
+
+            <ListView
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                WidthRequest="200"
+                HeightRequest="200"
+                ItemsSource="{Binding Users}"
+                Background="#344343">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <HorizontalStackLayout
+                                Margin="5">
+                                <Label Margin="0,0,10, 0" Text="{Binding ItemName}" TextColor="{Binding ItemColor}" />
+                                <Label Text="{Binding ItemIsReady}" />
+                            </HorizontalStackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Button
+                x:Name="Readiness"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                Clicked="ClickedReady"
+                Text="Готов"/>
+        </VerticalStackLayout>
+
+        <VerticalStackLayout
+            VerticalOptions="Center"
+            HorizontalOptions="End">
+            <ListView
+                HeightRequest="500"
+                WidthRequest="400"
+                ItemsSource="{Binding Messages}"
+                Background="#344343">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Label Margin="5,5,5,5" Text="{Binding .}"/>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <HorizontalStackLayout>
+                <Entry
+                    x:Name="EntryMessage"
+                    Placeholder="Введите сообщение"
+                    HorizontalOptions="Center" />
+                <Button
+                    Text="Отправить"
+                    x:Name="SendMessage"
+                    Clicked="SendMessageClicked" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+        
+
+
+    </Grid>
+
+
+
+</ContentPage>
