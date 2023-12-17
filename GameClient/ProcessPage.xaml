@@ -134,18 +134,9 @@
             HeightRequest="200"
             WidthRequest="600"
             Background="#344343">
-
-            <Label
-                HorizontalOptions="Center">
-                Ваши программы
-            </Label>
-            <Grid
-                HorizontalOptions="Center">
-                <HorizontalStackLayout>
-
-                </HorizontalStackLayout>
-            </Grid>
-
+            <Button
+                Text="Закончить ход"
+                HorizontalOptions="Center"/>
             <Grid
                 HorizontalOptions="Center">
                 <HorizontalStackLayout>
@@ -179,7 +170,6 @@
                             HeightRequest="300"
                             Source="{Binding PathSecondCard}"/>
                     </VerticalStackLayout>
-
 
                 </HorizontalStackLayout>
             </Grid>

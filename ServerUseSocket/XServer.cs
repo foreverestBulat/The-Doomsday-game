@@ -20,8 +20,6 @@ public class XServer
     public bool Listening {  get; private set; }
     public List<ConnectedClient> Clients { get; set; }
 
-    public Queue<(XPacket, ConnectedClient)> ReceivedPackets = new Queue<(XPacket, ConnectedClient)>();
-    //public Queue<SettingsPacket> ReceivedPackets2 = new Queue<SettingsPacket>();
     public XServer(IPEndPoint ipEndPoint)
     {
         IPEndPoint = ipEndPoint;
@@ -53,21 +51,6 @@ public class XServer
             await client.SendPacket(packet);
         }
     }
-
-    public async Task CompleteReceivedPackets()
-    {
-        while (true)
-        {
-            await Task.Delay(10);
-            if (ReceivedPackets.Count == 0)
-                continue;
-
-            (XPacket packet, ConnectedClient client) = ReceivedPackets.Dequeue();
-            //await Complete(packet, client);
-            Console.WriteLine("ReceivedPackets.Dequeue()");
-        }
-    }
-
 
     public async Task<bool> AddUser(ConnectedClient newClient)
     {
@@ -155,6 +138,22 @@ public class XServer
             
             await client.SendPacket(packet);
         }
+    }
+
+    public ConnectedClient NextPlayer()
+    {
+        bool isNextPlayer = false;
+        foreach (var client in Clients)
+        {
+            if (isNextPlayer)
+                return client;
+            if (client.Person.IsYourMove)
+                if (client == Clients.Last())
+                    return Clients.First();
+                else
+                    isNextPlayer = true;
+        }
+        return null;
     }
 
     public List<Player> GetPlayers()
@@ -265,6 +264,19 @@ public class XServer
 }
 
 
+//public Queue<(XPacket, ConnectedClient)> ReceivedPackets = new Queue<(XPacket, ConnectedClient)>();
+//public async Task CompleteReceivedPackets()
+//{
+//    while (true)
+//    {
+//        await Task.Delay(10);
+//        if (ReceivedPackets.Count == 0)
+//            continue;
+
+//        (XPacket packet, ConnectedClient client) = ReceivedPackets.Dequeue();
+//        Console.WriteLine("ReceivedPackets.Dequeue()");
+//    }
+//}
 
 //public async Task Complete(XPacket packet, ConnectedClient connectedClient)
 //{

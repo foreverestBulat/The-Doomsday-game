@@ -11,11 +11,6 @@ public class GenerateLogicGame
 {
     private static Random Random = new Random();
 
-    //public static List<Arsenal> GetGuns()
-    //{
-    //    var guns = GetGuns(players.Count);
-    //}
-
     public static void SetRolePlayers(List<Player> players)
     {
         (int countHumans, int countRobots, int countOutcasts) = GetCountRoles(players.Count);

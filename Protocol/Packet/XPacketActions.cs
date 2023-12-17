@@ -21,6 +21,7 @@ public enum XPacketActions
     ArmYourself,
     AimWeapon,
     Shot,
+    FinishStep,
     OpenCard,
     OpenFirstCard,
     OpenSecondCard,

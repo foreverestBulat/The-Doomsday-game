@@ -22,11 +22,6 @@ public partial class ProcessPage : ContentPage, PageClient
 
     public ObservableCollection<Arsenal> Guns { get; set; }
 
-
-
-
-    private Queue<XPacket> ReveicingPackets { get; set; }
-
     public ProcessPage(XClient client, ObservableCollection<UserInPage> users, ObservableCollection<Arsenal> guns)
 	{
 		InitializeComponent();
@@ -34,7 +29,6 @@ public partial class ProcessPage : ContentPage, PageClient
 		Users = users;
         Guns = guns;
         Messages = new ObservableCollection<Message>();
-        ReveicingPackets = new Queue<XPacket>();
 
         PathImageRole = Client.Person.Role.ResourceImage;
         LabelRole = Client.Person.Role.Name;
@@ -53,6 +47,14 @@ public partial class ProcessPage : ContentPage, PageClient
         BindingContext = this;
         IsRunning = true;
 	}
+
+    public async void FinishStepClicked(object sender, EventArgs e)
+    {
+        await Client.SendPacket(new XPacket
+        {
+            Action = XPacketActions.FinishStep,
+        });
+    }
 
     public async void ChangeData(XPacket packet)
     {

@@ -235,15 +235,21 @@ public class ConnectedClient
                     });
                     break;
                 }
-        
-        }
-    }
 
-    public async Task SendPackets()
-    {
-        while (true)
-        {
-            
+            case XPacketActions.FinishStep:
+                {
+                    await Server.BroadcastPacket(new XPacket()
+                    {
+                        Action = XPacketActions.SendMessage,
+                        Type = XPacketTypes.Message,
+                        Content = $"{Person.Name} закончил ход"
+                    });
+
+                    var client = Server.NextPlayer();
+                    client.Person.IsYourMove = true;
+                    await Server.BroadcastUsers();
+                    break;
+                }
         }
     }
 
