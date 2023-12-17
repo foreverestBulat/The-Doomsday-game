@@ -20,7 +20,10 @@ public class Role
     public string Description;
     public string PermanentEffect;
     public string ResourceImage;
+    public static string DefaultImage = "rolecard.jpg";
     public string Hint;
+
+    public bool IsAvailable;
 
 }
 
@@ -32,6 +35,7 @@ public class Human : Role
     {
         Color = Color.Blue;
         IsAlwaysWho = "Человек";
+        IsAvailable = false;
     }
 }
 [Serializable]
@@ -41,6 +45,7 @@ public class Robot : Role
     {
         Color = Color.Red;
         IsAlwaysWho = "Робот";
+        IsAvailable = false;
     }
 }
 [Serializable]
@@ -49,6 +54,8 @@ public class Outcast : Role
     public Outcast()
     {
         Color = Color.Gray;
+        IsAlwaysWho = "Изгой";
+        IsAvailable = false;
     }
 }
 
@@ -84,15 +91,6 @@ public static class Data
             PermanentEffect = "В качестве действия вы можете вооружиться ракетницей.",
             Hint = null,
             ResourceImage = "shut.jpg"
-        },
-        new Robot()
-        {
-            IsAlways = true,
-            Name = "Бог из машины",
-            Description = "Когда открыта, все другие мгроки должны открыть свои карты верности.",
-            PermanentEffect = "В качестве дейсвия вы можете вооружиться лазером.",
-            Hint = null,
-            ResourceImage = "godrobot1.jpg"
         },
         new Outcast()
         {
@@ -139,15 +137,6 @@ public static class Data
             PermanentEffect = null,
             Hint = null,
             ResourceImage = "pozhiratel.jpg"
-        },
-        new Robot()
-        {
-            IsAlways = true,
-            Name = "Бог из машины",
-            Description = "Когда открыта, все другие мгроки должны открыть свои карты ролей.",
-            PermanentEffect = "В качестве дейсвия вы можете вооружиться ракетницей.",
-            Hint = null,
-            ResourceImage = "godrobot2.jpg"
         },
         new Robot()
         {
@@ -220,6 +209,28 @@ public static class Data
         //}
 
 
+    };
+
+    public static List<Role> SuperRole = new List<Role>
+    {
+        new Robot()
+        {
+            IsAlways = true,
+            Name = "Бог из машины",
+            Description = "Когда открыта, все другие мгроки должны открыть свои карты верности.",
+            PermanentEffect = "В качестве дейсвия вы можете вооружиться лазером.",
+            Hint = null,
+            ResourceImage = "godrobot1.jpg"
+        },
+        new Robot()
+        {
+            IsAlways = true,
+            Name = "Бог из машины",
+            Description = "Когда открыта, все другие мгроки должны открыть свои карты ролей.",
+            PermanentEffect = "В качестве дейсвия вы можете вооружиться ракетницей.",
+            Hint = null,
+            ResourceImage = "godrobot2.jpg"
+        },
     };
 
     //public bool IsAlways;

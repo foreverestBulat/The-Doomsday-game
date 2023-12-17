@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ public class Loyalty
     public string Name { get; set; }
     public int Score { get; set; }
     public string PathImage { get; set; }
+    public bool IsAvailable = false;
+    public string DefaultImage = "loyaltycard.jpg";
 }
 
 [Serializable]
@@ -21,7 +24,7 @@ public class HumanCard : Loyalty
 {
     public HumanCard(int score)
     {
-        Name = $"Человек";
+        Name = $"Человек X{score}";
         Score = score;
         PathImage = "humanloyalty.jpg";
     }
@@ -32,7 +35,7 @@ public class RobotCard : Loyalty
 {
     public RobotCard(int score)
     {
-        Name = $"Робот";
+        Name = $"Робот X{Score}";
         Score = score;
         PathImage = "robotloyalty.png";
     }
@@ -43,7 +46,7 @@ public class OutcastCard : Loyalty
 {
     public OutcastCard(int score)
     {
-        Name = $"Изгой";
+        Name = $"Изгой X{score}";
         Score = score;
         PathImage = "outcastloyalty.jpg";
     }

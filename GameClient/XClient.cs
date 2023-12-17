@@ -46,23 +46,6 @@ public class XClient
         // run tasks
     }
 
-    //public void RunReceiveAndSendPacketsAsync()
-    //{
-    //    Task.Run(ReceivePackets);
-    //    //Task.Run(SendPackets);
-    //}
-
-    //public async Task Sigin(Player person)
-    //{
-    //    var packet = new XPacket()
-    //    {
-    //        Action = XPacketActions.SignIn,
-    //        Type = XPacketTypes.SignIn,
-    //        Content = person
-    //    };
-    //    await SendPacket(packet);
-    //}
-
     public async Task SignIn(Player person)
     {
         var packet = new XPacket()
@@ -79,10 +62,6 @@ public class XClient
         
         Person = person;
 
-
-        //Task.Run(ReceivePackets);
-        //Task.Run(CompletePackets);
-
         Task.Run(ReceivePackets);
         Task.Run(CompleteReceivingPackets);
     }
@@ -90,9 +69,18 @@ public class XClient
 
     public async Task<XPacket> ReceivePacket()
     {
-        byte[] buffer = new byte[8192];
-        var received = await Socket.ReceiveAsync(buffer);
-        return XPacketConverter.FromByteArray(buffer);
+        var buffer = new byte[1024];
+        int bytesRead = await Socket.ReceiveAsync(buffer);
+        var packetData = new List<byte>(buffer.Take(bytesRead));
+
+        while (bytesRead == buffer.Length)
+        {
+            buffer = new byte[1024];
+            bytesRead = await Socket.ReceiveAsync(buffer);
+            packetData.AddRange(buffer.Take(bytesRead));
+        }
+
+        return XPacketConverter.FromByteArray(packetData.ToArray());
     }
 
     public async Task SendPacket(XPacket packet)
@@ -111,20 +99,6 @@ public class XClient
         }
     }
 
-    //public async Task CompletePackets()
-    //{
-    //    while (true)
-    //    {
-    //        await Task.Delay(10);
-    //        if (PacketReceivedQueue.Count == 0)
-    //            continue;
-
-    //        await Complete(PacketReceivedQueue.Dequeue());
-    //    }
-    //}
-
-
-
     public async void CompleteReceivingPackets()
     {
         while (true)
@@ -140,21 +114,6 @@ public class XClient
             }
         }
     }
-
-    //public async Task SendPackets()
-    //{
-    //    while (true)
-    //    {
-    //        if (!Socket.Connected)
-    //            return;
-
-    //        if (PacketSendingQueue.Count == 0)
-    //            continue;
-
-    //        var packet = PacketSendingQueue.Dequeue();
-    //        await SendPacket(packet);
-    //    }
-    //}
 
     public void Close()
     {

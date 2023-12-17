@@ -28,6 +28,8 @@ namespace GameClient
                     Color = System.Drawing.Color.FromArgb(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256)),
                     IsReady = false,
                     IsYourMove = false,
+                    HealthPoints = 2,
+                    IsWatchCard = false,
                     //Guns = null,
                 };
                 //await Client.Sigin(person);

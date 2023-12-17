@@ -24,20 +24,22 @@
                                         Clicked="FirstCardClicked"
                                         x:Name="FirstCardXaml"
                                         HeightRequest="300"
-                                        Source="loyaltycard.jpg"/>
+                                        Source="{Binding CurrentImageFirstCard}"/>
                                     <ImageButton
                                         x:Name="Role"
                                         HeightRequest="300"
-                                        Source="rolecard.jpg"
+                                        Source="{Binding СurrentImageRole}"
                                         Clicked="RoleClicked"/>
                                     <ImageButton
                                         Clicked="SecondCardClicked"
                                         x:Name="SecondCardXaml"
                                         HeightRequest="300"
-                                        Source="loyaltycard.jpg"/>
+                                        Source="{Binding CurrentImageSecondCard}"/>
                                 </HorizontalStackLayout>
-                                <Label
-                                    Text="{Binding ItemName}"/>
+                                <Button
+                                        Clicked="NameClicked"
+                                        Text="{Binding ItemName}"/>
+
                             </VerticalStackLayout>
                         </ViewCell>
                     </DataTemplate>
@@ -72,22 +74,24 @@
             <ListView
                 VerticalOptions="Center"
                 HorizontalOptions="Start"
-                WidthRequest="400"
+                WidthRequest="450"
                 ItemsSource="{Binding Guns}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
+
                             <HorizontalStackLayout
                                 Margin="0,10,0,0">
                                 <ImageButton
                                     WidthRequest="300"
+                                    Clicked="GunClicked"
                                     Source="{Binding NameImage}"/>
                                 <Label
                                     WidthRequest="100"
                                     HeightRequest="100"
-                                    Text="{Binding Name}"
                                     HorizontalTextAlignment="Center"
-                                    VerticalTextAlignment="Center"/>
+                                    VerticalTextAlignment="Center"
+                                    Text="{Binding Name}"/>
                             </HorizontalStackLayout>
                         </ViewCell>
                     </DataTemplate>
@@ -107,7 +111,7 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <Label Margin="5,5,5,5" Text="{Binding .}"/>
+                            <Label Margin="5,5,5,5" Text="{Binding MessageText}" TextColor="{Binding Color}"/>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>

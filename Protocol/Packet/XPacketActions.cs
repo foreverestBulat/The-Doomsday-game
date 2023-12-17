@@ -8,17 +8,26 @@ using System.Threading.Tasks;
 namespace Protocol.Packet;
 
 [Serializable]
-[DataContract]
 public enum XPacketActions
 {
-    [EnumMember] AddUser,
-    [EnumMember] SignIn,
-    [EnumMember] RemoveUser,
-    [EnumMember] SetID,
-    [EnumMember] Readiness,
-    [EnumMember] StartGame,
-    [EnumMember] SendMessage,
-    [EnumMember] SetGuns,
-    [EnumMember] Shot,
-    [EnumMember] Unknown
+    AddUser,
+    SignIn,
+    RemoveUser,
+    SetID,
+    Readiness,
+    StartGame,
+    SendMessage,
+    SetGuns,
+    ArmYourself,
+    AimWeapon,
+    Shot,
+    OpenCard,
+    OpenFirstCard,
+    OpenSecondCard,
+    OpenRole,
+    LostHealtPoints,
+    TakeProgram,
+    DropGun,
+    Nothing,
+    Unknown
 }

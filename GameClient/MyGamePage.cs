@@ -1,4 +1,5 @@
-﻿using Protocol.Packet;
+﻿using Microsoft.VisualBasic;
+using Protocol.Packet;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,7 +14,7 @@ interface PageClient
 {
     XClient Client { get; set; }
     ObservableCollection<UserInPage> Users { get; set; }
-    ObservableCollection<string> Messages { get; set; }
+    ObservableCollection<Message> Messages { get; set; }
     void ChangeData(XPacket packet);
     
 }

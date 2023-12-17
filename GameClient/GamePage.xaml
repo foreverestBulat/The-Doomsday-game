@@ -52,7 +52,7 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <Label Margin="5,5,5,5" Text="{Binding .}"/>
+                            <Label Margin="5,5,5,5" Text="{Binding MessageText}" TextColor="{Binding Color}"/>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>

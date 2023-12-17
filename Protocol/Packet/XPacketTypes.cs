@@ -8,21 +8,25 @@ using System.Threading.Tasks;
 namespace Protocol.Packet;
 
 [Serializable]
-[DataContract]
 public enum XPacketTypes
 {
-    [EnumMember] Handshake,
-    [EnumMember] SignIn,
-    [EnumMember] Person,
-    [EnumMember] Persons,
-    [EnumMember] Message,
-
-    [EnumMember] Guns,
-    [EnumMember] Handgun,
-    [EnumMember] Rifle,
-    [EnumMember] Laser,
-    [EnumMember] FlareGun,
-    [EnumMember] Assistant,
-
-    [EnumMember] Unknown
+    Handshake,
+    SignIn,
+    Person,
+    Persons,
+    Message,
+    Role,
+    Card,
+    Guns,
+    Gun,
+    Handgun,
+    Rifle,
+    Laser,
+    FlareGun,
+    Assistant,
+    Program,
+    Nothing,
+    DropGun,
+    HealthPoints,
+    Unknown
 }

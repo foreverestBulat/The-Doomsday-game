@@ -52,6 +52,7 @@
 	<ItemGroup>
 	  <None Remove="Resources\Images\assistant.jpg" />
 	  <None Remove="Resources\Images\astronaut.jpeg" />
+	  <None Remove="Resources\Images\blockgun.jpg" />
 	  <None Remove="Resources\Images\Death.jpg" />
 	  <None Remove="Resources\Images\godrobot1.jpg" />
 	  <None Remove="Resources\Images\godrobot2.jpg" />

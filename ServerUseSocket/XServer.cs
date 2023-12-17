@@ -107,7 +107,7 @@ public class XServer
 
     public async Task<XPacket> ReceivePacket(Socket client)
     {
-        var buffer = new byte[8192];
+        var buffer = new byte[8192 * 2];
         var received = await client.ReceiveAsync(buffer, SocketFlags.None);
         return XPacketConverter.FromByteArray(buffer);
     }
@@ -199,9 +199,7 @@ public class XServer
             Clients.Add(connectedClient);
             // receive
             await BroadcastUsers();
-
-            //if (await AddUser(connectedClient))
-            //    Clients.Add(connectedClient);
+            Task.Run(connectedClient.RunPackets);
 
             return connectedClient;
         }
@@ -229,15 +227,6 @@ public class XServer
         Console.WriteLine("Все готовы играть");
         var players = GetPlayers();
         GenerateLogicGame.SetRolePlayers(players);
-        //await BroadcastUsers();
-
-        //var gunsPacket = new XPacket()
-        //{
-        //    Action = XPacketActions.SetGuns,
-        //    Type = XPacketTypes.Guns,
-        //    Content = GenerateLogicGame.GetGuns(players.Count)
-        //};
-        //await BroadcastPacket(gunsPacket);
 
         var startGamePacket = new XPacket()
         {
@@ -250,16 +239,13 @@ public class XServer
 
     public async Task AcceptClients()
     {
-        //Task.Run(CompleteReceivedPackets);
-
         while (true)
         {
             if (!Listening)
                 return;
             
             var client = await AcceptClient();
-            var connectedClient = await SignIn(client); //
-            //var connectedClient = new ConnectedClient(client, this);
+            var connectedClient = await SignIn(client);
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using Protocol.Packet;
+﻿using Newtonsoft.Json.Serialization;
+using Protocol.Packet;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,6 +18,40 @@ public class Arsenal
     public string Description { get; set; }
     public string Shot { get; set; }
     public string NameImage { get; set; }
+    public bool IsAvailable { get; set; }
+    public bool IsReadyShoot { get; set; }
+
+    public static ((int, XPacketActions), (XPacketActions, XPacketActions)) ActionShot(Arsenal gun)
+    {
+        switch (gun)
+        {
+            case Handgun:
+                return ((1, XPacketActions.OpenCard), 
+                        (XPacketActions.TakeProgram, XPacketActions.DropGun));
+                
+            case Rifle:
+                return ((2, XPacketActions.OpenRole),
+                        (XPacketActions.Nothing, XPacketActions.DropGun));
+                
+
+            case Laser:
+                return ((2, XPacketActions.OpenRole),
+                        (XPacketActions.Nothing,XPacketActions.DropGun));
+                
+
+            case FlareGun:
+                return ((1, XPacketActions.OpenCard),
+                        (XPacketActions.TakeProgram, XPacketActions.DropGun));
+                
+
+            case Assistant:
+                return ((1, XPacketActions.OpenCard),
+                        (XPacketActions.TakeProgram, XPacketActions.DropGun));
+
+            default:
+                throw new NotImplementedException();
+        }
+    }
 }
 
 [Serializable]
@@ -30,14 +65,9 @@ public class Handgun : Arsenal
         Description = "Назначьте целью любого игрока, кроме себя: направьте оружие на него.";
         Shot = "Цель открывает одну из своих карт верности, или получает одно повреждение. Бросьте оружие и возьмите из колоды программу.";
         NameImage = "handgun.jpg";
+        IsAvailable = true;
+        IsReadyShoot = false;
     }
-
-    //public static string nameImage = "handgun.jpg";
-    //public static XPacketActions action = XPacketActions.Shot;
-    //public static XPacketTypes type = XPacketTypes.Handgun;
-    //public static string name = "Пистолет";
-    //public static string description = "Назначьте целью любого игрока, кроме себя: направьте оружие на него.";
-    //public static string shot = "Цель открывает одну из своих карт верности, или получает одно повреждение. Бросьте оружие и возьмите из колоды программу.";
 }
 
 [Serializable]
@@ -51,14 +81,9 @@ public class Rifle : Arsenal
         Description = "Назначьте целью любого игрока, кроме себя: направьте оружие на него.";
         Shot = "Цель открывает карту роли, или получает два повреждения. Бросьте это оружие.";
         NameImage = "rifle.jpg";
+        IsAvailable = true;
+        IsReadyShoot = false;
     }
-
-    //public static string nameImage = "rifle.jpg";
-    //public static XPacketActions action = XPacketActions.Shot;
-    //public static XPacketTypes type = XPacketTypes.Rifle;
-    //public static string name = "Винтовка";
-    //public static string description = "Назначьте целью любого игрока, кроме себя: направьте оружие на него.";
-    //public static string shot = "Цель открывает карту роли, или получает два повреждения. Бросьте это оружие.";
 }
 
 [Serializable]
@@ -72,14 +97,9 @@ public class Laser : Arsenal
         Description = "Не направляйте его ни на кого. Выберите и назовите цель в момент выстрела.";
         Shot = "Назовите цель. Этот игрок открывает карту роли, или получает два повреждения. Бросьте это оружие.";
         NameImage = "lasergun.jpg";
+        IsAvailable = true;
+        IsReadyShoot = false;
     }
-
-    //public static string nameImage = "lasergun.jpg";
-    //public static XPacketActions action = XPacketActions.Shot;
-    //public static XPacketTypes type = XPacketTypes.Laser;
-    //public static string name = "Лазер";
-    //public static string description = "Не направляйте его ни на кого. Выберите и назовите цель в момент выстрела.";
-    //public static string shot = "Назовите цель. Этот игрок открывает карту роли, или получает два повреждения. Бросьте это оружие.";
 }
 
 [Serializable]
@@ -91,16 +111,11 @@ public class FlareGun : Arsenal
         Type = XPacketTypes.FlareGun;
         Name = "Ракетница";
         Description = "Выберите двух игроков в качестве цели. Эти игроки должны сидеть рядом друг с другом.";
-        Shot = "Каждая цель открывает одну карту верности или получаете одно повреждение. Бросьте это оружие и позьмите из колоды программу.";
+        Shot = "Каждая цель открывает одну карту верности или получаете одно повреждение. Бросьте это оружие и возьмите из колоды программу.";
         NameImage = "rocketgun.jpg";
+        IsAvailable = true;
+        IsReadyShoot = false;
     }
-
-    //public static string nameImage = "rocketgun.jpg";
-    //public static XPacketActions action = XPacketActions.Shot;
-    //public static XPacketTypes type = XPacketTypes.FlareGun;
-    //public static string name = "Ракетница";
-    //public static string description = "Выберите двух игроков в качестве цели. Эти игроки должны сидеть рядом друг с другом.";
-    //public static string shot = "Каждая цель открывает одну карту верности или получаете одно повреждение. Бросьте это оружие и позьмите из колоды программу.";
 }
 
 [Serializable]
@@ -112,14 +127,9 @@ public class Assistant : Arsenal
         Type = XPacketTypes.Assistant;
         Name = "Напарник";
         Description = "Назначьте целью любого игрока, кроме себя: направьте оружие на него.";
-        Shot = "Цель открывает одну из своих карт верности, или получает одно повреждение. Вы можете посстановить однужизнь уцели вместо стрельбы. Бросьте это оружие и возьмите из колоды программу.";
+        Shot = "Цель открывает одну из своих карт верности, или получает одно повреждение. Вы можете восстановить одну жизнь уцели вместо стрельбы. Бросьте это оружие и возьмите из колоды программу.";
         NameImage = "assistant.jpg";
+        IsAvailable = true;
+        IsReadyShoot = false;
     }
-
-    //public static string nameImage = "assistant.jpg";
-    //public static XPacketActions action = XPacketActions.Shot;
-    //public static XPacketTypes type = XPacketTypes.Assistant;
-    //public static string name = "Напарник";
-    //public static string description = "Назначьте целью любого игрока, кроме себя: направьте оружие на него.";
-    //public static string shot = "Цель открывает одну из своих карт верности, или получает одно повреждение. Вы можете посстановить однужизнь уцели вместо стрельбы. Бросьте это оружие и возьмите из колоды программу.";
 }

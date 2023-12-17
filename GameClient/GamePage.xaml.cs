@@ -12,14 +12,14 @@ public partial class GamePage : ContentPage, PageClient
 	public ObservableCollection<UserInPage> Users { get; set; }
     public bool IsRunning { get; set; }
 
-	public ObservableCollection<string> Messages { get; set; }
+	public ObservableCollection<Message> Messages { get; set; }
 
     public GamePage(XClient client)
 	{
 		InitializeComponent();
 		Client = client;
 		Users = new ObservableCollection<UserInPage>();
-		Messages = new ObservableCollection<string>();
+		Messages = new ObservableCollection<Message>();
 		BindingContext = this;
 		//IsRunning = true;
 		//Task.Run(Client.ReceivePackets);
@@ -53,7 +53,11 @@ public partial class GamePage : ContentPage, PageClient
 				{
 					MainThread.BeginInvokeOnMainThread(() =>
 					{
-						Messages.Add(packet.Content.ToString());
+						Messages.Add(new Message
+						{
+							Color = Colors.White,
+							MessageText = packet.Content.ToString()
+                        });
 					});
 					break;
 				}
@@ -141,7 +145,9 @@ public class UserInPage
     public Color ItemColor { get; set; }
 	public string ItemIsReady { get; set; }
 	public string ItemIsYouMove { get; set; }
-	public string Image { get; set; }
+	public string —urrentImageRole { get; set; }
+	public string CurrentImageFirstCard { get; set; }
+	public string CurrentImageSecondCard { get; set; }
 
 	public Role Role { get; set; }
 	public Loyalty FirstCard { get; set; }
@@ -158,14 +164,14 @@ public class UserInPage
 			ItemColor = new Color(user.Color.R, user.Color.G, user.Color.B),
 			ItemIsReady = user.IsReady ? "√ÓÚÓ‚" : "ÕÂ „ÓÚÓ‚",
 			ItemIsYouMove = user.IsYourMove ? "’Ó‰ËÚ" : null,
-			Image = user.Role != null ? user.Role.ResourceImage : null,
-			Role = user.Role,
+			—urrentImageRole = Role.DefaultImage,
+			CurrentImageFirstCard = user.FirstCard != null ? user.FirstCard.DefaultImage : null,
+			CurrentImageSecondCard = user.SecondCard != null ? user.SecondCard.DefaultImage : null,
+            Role = user.Role,
             FirstCard = user.FirstCard,
             SecondCard = user.SecondCard,
-			//Guns = user.Guns,
         };
     }
-
 }
 
 

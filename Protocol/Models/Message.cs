@@ -8,13 +8,7 @@ namespace Protocol.Models;
 
 [Serializable]
 public class Message
-{
-    public int UserID { get; set; }
+{ 
     public string Name { get; set; }
-    public string Sentence { get; set; }
-
-    public override string ToString()
-    {
-        return $"{Name}: {Sentence}";
-    }
+    public string MessageText { get; set; }
 }

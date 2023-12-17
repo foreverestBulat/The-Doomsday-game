@@ -47,6 +47,11 @@ public class GenerateLogicGame
         Console.WriteLine(numIsFirstMove);
         players[numIsFirstMove].IsYourMove = true;
 
+        //foreach (var player in players)
+        //{
+        //    player.IsYourMove = true;//
+        //}
+
         (int countX1Humans,
         int countX1Robots,
         int countX1Outcast,
@@ -200,6 +205,14 @@ public class GenerateLogicGame
                 {
                     new Handgun(),
                     new Rifle(),
+                    new Laser()
+                    {
+                        IsAvailable = false,
+                    },
+                    new FlareGun()
+                    {
+                        IsAvailable = false
+                    }
                 };
 
             case 5:
@@ -208,6 +221,14 @@ public class GenerateLogicGame
                     new Handgun(),
                     new Rifle(),
                     new Assistant(),
+                    new Laser()
+                    {
+                        IsAvailable = false,
+                    },
+                    new FlareGun()
+                    {
+                        IsAvailable = false
+                    }
                 };
 
             case 6:
@@ -216,6 +237,14 @@ public class GenerateLogicGame
                     new Handgun(),
                     new Rifle(),
                     new Assistant(),
+                    new Laser()
+                    {
+                        IsAvailable = false,
+                    },
+                    new FlareGun()
+                    {
+                        IsAvailable = false
+                    }
                 };
 
             case 7:
@@ -225,6 +254,14 @@ public class GenerateLogicGame
                     new Rifle(),
                     new Rifle(),
                     new Assistant(),
+                    new Laser()
+                    {
+                        IsAvailable = false,
+                    },
+                    new FlareGun()
+                    {
+                        IsAvailable = false
+                    }
                 };
 
             case 8:
@@ -234,6 +271,14 @@ public class GenerateLogicGame
                     new Rifle(),
                     new Rifle(),
                     new Assistant(),
+                    new Laser()
+                    {
+                        IsAvailable = false,
+                    },
+                    new FlareGun()
+                    {
+                        IsAvailable = false
+                    }
                 };
 
             case 9:
@@ -243,7 +288,14 @@ public class GenerateLogicGame
                     new Rifle(),
                     new Rifle(),
                     new Assistant(),
-                    new FlareGun(),
+                    new Laser()
+                    {
+                        IsAvailable = false,
+                    },
+                    new FlareGun()
+                    {
+                        IsAvailable = false
+                    }
                 };
 
             case 10:
@@ -253,7 +305,14 @@ public class GenerateLogicGame
                     new Rifle(),
                     new Rifle(),
                     new Assistant(),
-                    new FlareGun(),
+                    new Laser()
+                    {
+                        IsAvailable = false,
+                    },
+                    new FlareGun()
+                    {
+                        IsAvailable = false
+                    }
                 };
 
             default:
