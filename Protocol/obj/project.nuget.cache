@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "udUNWBM1ot3DUf6bYGueG19hHz5NsSQCrqTkf6keJLoK+4WEvLX7Kaqoh8ydK4Ux5euuoB2aDo3LgkLDF7pV0g==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Admin\\Desktop\\ОРИС\\Second semectr\\ServerUseSocket\\Protocol\\Protocol.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
