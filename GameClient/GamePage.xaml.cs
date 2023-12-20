@@ -64,8 +64,8 @@ public partial class GamePage : ContentPage, PageClient
 
 			case XPacketActions.StartGame:
 				{
-					(List<Player> persons, List<Arsenal> guns) 
-						= ((List<Player>, List<Arsenal>))packet.Content;
+					(List<Player> persons, List<Arsenal> guns, Queue<Protocol.Models.Program> programs) 
+						= ((List<Player>, List<Arsenal>, Queue<Protocol.Models.Program>))packet.Content;
 
 					Client.Person = persons.Where(player => player.ID == Client.Person.ID).FirstOrDefault();
                     MainThread.BeginInvokeOnMainThread(() =>
@@ -77,12 +77,16 @@ public partial class GamePage : ContentPage, PageClient
 						var newGuns = new ObservableCollection<Arsenal>();
 						foreach (var gun in guns)
 							newGuns.Add(gun);
-						Client.CurrentPage = new ProcessPage(Client, Users, newGuns);
+
+						var newPrograms = new ObservableCollection<Protocol.Models.Program>();
+						foreach (var program in programs)
+							newPrograms.Add(program);
+
+						Client.CurrentPage = new ProcessPage(Client, Users, newGuns, programs);
 						Navigation.PushAsync(Client.CurrentPage);
 					});
                     break;
 				}
-
 		}
 	}
 
@@ -105,17 +109,6 @@ public partial class GamePage : ContentPage, PageClient
 
 		await Client.SendPacket(packet);
 	}
-
-	//public async void CompleteActions()
-	//{
- //       while (IsRunning)
-	//	{
-	//		var packet = await Client.ReceivePacket();
- //           ChangeData(packet);
-	//		await Task.Delay(1000);
-	//	}
-	//}
-
 
     private void MainPage_Disappearing(object sender, EventArgs e)
     {
@@ -163,7 +156,7 @@ public class UserInPage
 			ItemName = user.Name,
 			ItemColor = new Color(user.Color.R, user.Color.G, user.Color.B),
 			ItemIsReady = user.IsReady ? "√ÓÚÓ‚" : "ÕÂ „ÓÚÓ‚",
-			ItemIsYouMove = user.IsYourMove ? "’Ó‰ËÚ" : null,
+			ItemIsYouMove = user.IsMyMove ? "’Ó‰ËÚ" : null,
 			—urrentImageRole = Role.DefaultImage,
 			CurrentImageFirstCard = user.FirstCard != null ? user.FirstCard.DefaultImage : null,
 			CurrentImageSecondCard = user.SecondCard != null ? user.SecondCard.DefaultImage : null,

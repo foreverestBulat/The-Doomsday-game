@@ -69,8 +69,6 @@ public class ConnectedClient
                 var packet = await ReceivePacket();
                 Console.WriteLine("Client прислал пакет");
                 ReceivedPackets.Enqueue(packet);
-                //Server.ReceivedPackets.Enqueue((packet, this));
-                //await Complete(packet);
             }
             catch (Exception ex)
             {
@@ -132,11 +130,13 @@ public class ConnectedClient
             case XPacketActions.AimWeapon:
                 {
                     var id = (int)packet.Content;
+                    var client = Server.Clients.Where(cl => cl.ID == id).FirstOrDefault();
+                    client.Person.GunsIsPointedMe.Add(Person.Gun);
                     var newPacket = new XPacket()
                     {
                         Action = XPacketActions.SendMessage,
                         Type = XPacketTypes.Gun,
-                        Content = $"{Person.Name} направил {Person.Gun.Name} на игрока {Server.Clients.Where(cl => cl.ID == id).FirstOrDefault()?.Person.Name}"
+                        Content = $"{Person.Name} направил {Person.Gun.Name} на игрока {client.Person.Name}"
                     };
                     Person.Gun.IsReadyShoot = true;
                     await Server.BroadcastPacket(newPacket);
@@ -183,11 +183,25 @@ public class ConnectedClient
 
             case XPacketActions.TakeProgram:
                 {
+                    var program = Server.Programs.Dequeue();
                     await Server.BroadcastPacket(new XPacket()
                     {
                         Action = XPacketActions.SendMessage,
                         Type = XPacketTypes.Program,
-                        Content = $"{Person.Name} взял программу"
+                        Content = $"{Person.Name} взял программу:\n{program}"
+                    });
+                    break;
+                }
+
+            case XPacketActions.ApplyProgram:
+                {
+                    var applyProgram = (AppleyProgramSend)packet.Content;
+                    await Server.ApplyProgram(applyProgram);
+                    await Server.BroadcastPacket(new XPacket()
+                    {
+                        Action = XPacketActions.SendMessage,
+                        Type = XPacketTypes.Program,
+                        Content = $"{Person.Name} применяет программу: \n{applyProgram.Program}"
                     });
                     break;
                 }
@@ -225,14 +239,26 @@ public class ConnectedClient
                     break;
                 }
 
-            case XPacketActions.LostHealtPoints:
+            case XPacketActions.LostHealthPoints:
                 {
+                    Person.HealthPoints -= (int)packet.Content;
+
+                    if (Person.HealthPoints <= 0)
+                    {
+                        Person.Role.IsAvailable = true;
+                        Person.FirstCard.IsAvailable = true;
+                        Person.SecondCard.IsAvailable = true;
+                        await Server.BroadcastUsers();
+                        Close();
+                    }
+
                     await Server.BroadcastPacket(new XPacket()
                     {
-                        Action = XPacketActions.OpenRole,
+                        Action = XPacketActions.SendMessage,
                         Type = XPacketTypes.Card,
-                        Content = (ID, (int)packet.Content)
+                        Content = $"{Person.Name} потерял очки жизни"
                     });
+                    await Server.BroadcastUsers();
                     break;
                 }
 
@@ -244,9 +270,15 @@ public class ConnectedClient
                         Type = XPacketTypes.Message,
                         Content = $"{Person.Name} закончил ход"
                     });
-
-                    var client = Server.NextPlayer();
-                    client.Person.IsYourMove = true;
+                    var client = Server.GetNextPlayer();
+                    await Server.BroadcastPacket(new XPacket()
+                    {
+                        Action = XPacketActions.SendMessage,
+                        Type = XPacketTypes.Message,
+                        Content = $"{client.Person.Name} делает следующий ход"
+                    });
+                    Person.IsMyMove = false;
+                    client.Person.IsMyMove = true;
                     await Server.BroadcastUsers();
                     break;
                 }
@@ -265,12 +297,3 @@ public class ConnectedClient
         return $"Socket client: {Client}\nName: {Person.Name}\nColor: {Person.Color}";
     }
 }
-
-
-
-//Server.SentNeedPackets.Enqueue(new XServer.SettingsPacket
-//{
-//    TypeSending = XServer.TypeSending.SendEveryone,
-//    Sender = this,
-//    Packet = packet
-//});

@@ -26,9 +26,10 @@ public enum XPacketActions
     OpenFirstCard,
     OpenSecondCard,
     OpenRole,
-    LostHealtPoints,
+    LostHealthPoints,
     TakeProgram,
     DropGun,
     Nothing,
+    ApplyProgram,
     Unknown
 }

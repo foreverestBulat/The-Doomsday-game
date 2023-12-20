@@ -7,9 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Threading.Tasks;
+using ApplyPrograms = Protocol.Models.Programs;
 
 namespace ServerUseSocket;
 
@@ -19,6 +17,7 @@ public class XServer
     public Socket Listener { get; private set; }
     public bool Listening {  get; private set; }
     public List<ConnectedClient> Clients { get; set; }
+    public Queue<Protocol.Models.Program> Programs { get; set; }
 
     public XServer(IPEndPoint ipEndPoint)
     {
@@ -140,14 +139,14 @@ public class XServer
         }
     }
 
-    public ConnectedClient NextPlayer()
+    public ConnectedClient GetNextPlayer()
     {
         bool isNextPlayer = false;
         foreach (var client in Clients)
         {
             if (isNextPlayer)
                 return client;
-            if (client.Person.IsYourMove)
+            if (client.Person.IsMyMove)
                 if (client == Clients.Last())
                     return Clients.First();
                 else
@@ -227,11 +226,15 @@ public class XServer
         var players = GetPlayers();
         GenerateLogicGame.SetRolePlayers(players);
 
+        Programs = GenerateLogicGame.GetPrograms();
+
         var startGamePacket = new XPacket()
         {
             Action = XPacketActions.StartGame,
             Type = XPacketTypes.Unknown,
-            Content = (players, GenerateLogicGame.GetGuns(players.Count))
+            Content = (players, 
+                       GenerateLogicGame.GetGuns(players.Count), 
+                       Programs)
         };
         await BroadcastPacket(startGamePacket);
     }
@@ -248,143 +251,49 @@ public class XServer
         }
     }
 
-    public enum TypeSending
+    public async Task ApplyProgram(AppleyProgramSend applyProgram)
     {
-        SendEveryone,
-        SendOne
-    }
+        switch (applyProgram.Program.ProgramAction)
+        {
+            case ApplyPrograms.RoleExchange:
+                {
+                    List<int> ids = (List<int>)applyProgram.Data;
+                    var client1 = Clients.Where(cl => cl.ID == ids[0]).FirstOrDefault();
+                    var client2 = Clients.Where(cl => cl.ID == ids[1]).FirstOrDefault();
 
-    public class SettingsPacket
-    {
-        public TypeSending TypeSending { get; set; }
-        public ConnectedClient Sender { get; set; }
-        public XPacket Packet { get; set; }
-    }
+                    var role = client1.Person.Role;
+                    client1.Person.Role = client2.Person.Role;
+                    client2.Person.Role = role;
+                    await BroadcastUsers();
+                    await BroadcastPacket(new XPacket()
+                    {
+                        Action = XPacketActions.SendMessage,
+                        Type = XPacketTypes.Program,
+                        Content = $"{client1.Person.Name} и {client2.Person.Name} поменялсь ролями"   
+                    });
+                    break;
+                }
 
+            case ApplyPrograms.ChangeDirectionEveryoneWeapons:
+                {
+                    List<Arsenal> guns = null;
+                    var count = Clients.Count;
+
+                    var gunsPointed = Clients.Select(cl => cl.Person.GunsIsPointedMe).ToList();
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (i == count - 1) break;
+                        if (i == 0)
+                            Clients[i].Person.GunsIsPointedMe =
+                                gunsPointed[i + 1];
+
+                        Clients[i + 1].Person.GunsIsPointedMe = gunsPointed[i];
+                    }
+
+                    await BroadcastUsers();
+                    break;
+                }
+        }
+    }
 }
-
-
-//public Queue<(XPacket, ConnectedClient)> ReceivedPackets = new Queue<(XPacket, ConnectedClient)>();
-//public async Task CompleteReceivedPackets()
-//{
-//    while (true)
-//    {
-//        await Task.Delay(10);
-//        if (ReceivedPackets.Count == 0)
-//            continue;
-
-//        (XPacket packet, ConnectedClient client) = ReceivedPackets.Dequeue();
-//        Console.WriteLine("ReceivedPackets.Dequeue()");
-//    }
-//}
-
-//public async Task Complete(XPacket packet, ConnectedClient connectedClient)
-//{
-//    switch (packet.Action)
-//    {
-//        case XPacketActions.SignIn:
-//            {
-//                var person = (Player)packet.Content;
-//                for (int i = 0; i < Clients.Count; i++)
-//                {
-//                    if (person.Name == Clients[i].Person.Name)
-//                    {
-//                        connectedClient.Close();
-//                        Console.WriteLine("Не удалось войти в систему");
-//                        break;
-//                    }
-//                }
-
-//                person.ID = Clients.Count;
-
-//                packet = new XPacket()
-//                {
-//                    Action = XPacketActions.SetID,
-//                    Type = XPacketTypes.Handshake,
-//                    Content = person.ID
-//                };
-//                await connectedClient.SendPacket(packet);
-
-//                connectedClient.Person = person;
-//                connectedClient.ID = connectedClient.Person.ID;
-
-//                // await BroadcastUsers();
-
-//                var newPacket = new XPacket()
-//                {
-//                    Action = XPacketActions.AddUser,
-//                    Type = XPacketTypes.Person,
-//                    Content = connectedClient.Person
-//                };
-
-//                foreach (var client in Clients)
-//                    await client.SendPacket(newPacket);
-
-//                Clients.Add(connectedClient);
-
-//                await connectedClient.SendPacket(new XPacket()
-//                {
-//                    Action = XPacketActions.AddUser,
-//                    Type = XPacketTypes.Persons,
-//                    Content = GetPlayers()
-//                });
-
-//                // add userov for everyone(connectedClient)
-
-//                Console.WriteLine($"Новый клиент {connectedClient} успешно вошел в систему");
-
-//                //await BroadcastUsers(); //
-//                break;
-//            }
-
-//        case XPacketActions.Readiness:
-//            {
-//                var person = (Player)packet.Content;
-//                var senderClient = Clients.Where(client => client.ID == person.ID).FirstOrDefault();
-//                if (senderClient != null)
-//                    senderClient.Person.IsReady = person.IsReady;
-
-//                if (IsEveryoneReady())
-//                    await StartGame();
-
-
-//                var newPacket = new XPacket()
-//                {
-//                    Action = XPacketActions.Readiness,
-//                    Type = XPacketTypes.Unknown,
-//                    Content = person.ID
-//                };
-//                foreach (var client in Clients)
-//                {
-//                    //if (client.ID != connectedClient.ID)
-//                    await client.SendPacket(newPacket);
-//                }
-
-//                //BroadcastUsers();
-//                break;
-//            }
-
-//        case XPacketActions.SendMessage:
-//            {
-//                await BroadcastMessage(connectedClient, packet.Content.ToString());
-//                break;
-//            }
-
-//        case XPacketActions.RemoveUser:
-//            {
-//                int id = connectedClient.ID;
-//                Clients.RemoveAt(id);
-//                var newPacket = new XPacket()
-//                {
-//                    Action = XPacketActions.RemoveUser,
-//                    Type = XPacketTypes.Person,
-//                    Content = id
-//                };
-//                foreach (var client in Clients)
-//                    await client.SendPacket(newPacket);
-
-//                connectedClient.Close();
-//                break;
-//            }
-//    }
-//}

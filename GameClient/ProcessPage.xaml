@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GameClient.ProcessPage"
              Title="ProcessPage"
-             >
+             BackgroundImageSource="background.jpg">
     <Grid>
 
         <StackLayout
@@ -46,7 +46,7 @@
                 </ListView.ItemTemplate>
             </ListView>
         </StackLayout>
-        
+
         <ListView
             VerticalOptions="Start"
             HorizontalOptions="Start"
@@ -99,9 +99,32 @@
             </ListView>
         </VerticalStackLayout>
 
+        <VerticalStackLayout
+            VerticalOptions="End"
+            HorizontalOptions="Start">
+            <Label
+                HorizontalOptions="Center"
+                Text="Ваши программы"/>
+            <ListView
+                HeightRequest="250"
+                WidthRequest="200"
+                ItemsSource="{Binding MyPrograms}"
+                Background="#344343">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Button
+                                Clicked="ProgramClicked"
+                                Text="Программа"/>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </VerticalStackLayout>
+
 
         <VerticalStackLayout
-            VerticalOptions="Center"
+            VerticalOptions="Start"
             HorizontalOptions="End">
             <ListView
                 HeightRequest="500"
@@ -131,11 +154,19 @@
         <VerticalStackLayout
             VerticalOptions="End"
             HorizontalOptions="Center"
-            HeightRequest="200"
-            WidthRequest="600"
+            HeightRequest="400"
             Background="#344343">
             <Button
+                Text="Взять программу"
+                Clicked="ProgramClicked"
+                HorizontalOptions="Center"/>
+            <Button
+                Text="Применить программу"
+                Clicked="FinishProgramClicked"
+                HorizontalOptions="Center"/>
+            <Button
                 Text="Закончить ход"
+                Clicked="FinishStepClicked"
                 HorizontalOptions="Center"/>
             <Grid
                 HorizontalOptions="Center">
@@ -177,24 +208,3 @@
 
     </Grid>
 </ContentPage>
-
-
-
-
-<!--
-<ViewCell>
-    <VerticalStackLayout>
-        <HorizontalStackLayout>
-            <ImageButton 
-                                        x:Name="LoyaltyCard"
-                                        Source="loyaltycard.jpg"/>
-            <ImageButton 
-                                        x:Name="Role"
-                                        Source="rolecard.jpg"/>
-            <ImageButton 
-                                        x:Name="LoyaltyCard"
-                                        Source="loyaltycard.jpg"/>
-        </HorizontalStackLayout>
-        <Label/>
-    </VerticalStackLayout>
-</ViewCell>-->

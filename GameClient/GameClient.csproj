@@ -52,6 +52,7 @@
 	<ItemGroup>
 	  <None Remove="Resources\Images\assistant.jpg" />
 	  <None Remove="Resources\Images\astronaut.jpeg" />
+	  <None Remove="Resources\Images\background.jpg" />
 	  <None Remove="Resources\Images\blockgun.jpg" />
 	  <None Remove="Resources\Images\Death.jpg" />
 	  <None Remove="Resources\Images\godrobot1.jpg" />
@@ -70,6 +71,7 @@
 	  <None Remove="Resources\Images\photograph.jpg" />
 	  <None Remove="Resources\Images\postoronimV.jpg" />
 	  <None Remove="Resources\Images\pozhiratel.jpg" />
+	  <None Remove="Resources\Images\program.jpg" />
 	  <None Remove="Resources\Images\rifle.jpg" />
 	  <None Remove="Resources\Images\robotloyalty.png" />
 	  <None Remove="Resources\Images\rocketgun.jpg" />

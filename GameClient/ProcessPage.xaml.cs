@@ -1,6 +1,8 @@
 using Protocol.Models;
 using Protocol.Packet;
 using System.Collections.ObjectModel;
+using ApplyProgramSend = Protocol.Models.AppleyProgramSend;
+using ApplyPrograms = Protocol.Models.Programs;
 
 namespace GameClient;
 
@@ -8,9 +10,14 @@ public partial class ProcessPage : ContentPage, PageClient
 {
 	public XClient Client { get; set; }
     public ObservableCollection<UserInPage> Users { get; set; }
+    public Queue<Protocol.Models.Program> Programs { get; set; }
     public ObservableCollection<Message> Messages { get; set; }
-    private bool IsRunning { get; set; }
 
+    private Protocol.Models.Program ApplyCurrentProgram { get; set; }
+
+    private bool IsFinishProgram = true;
+    private bool IsRoleExchange = false;
+    private List<int> RolesExchange = new List<int>();
     public string LabelRole { get; set; }
     public string PathImageRole { get; set; }
 
@@ -21,13 +28,19 @@ public partial class ProcessPage : ContentPage, PageClient
     public string PathSecondCard { get; set; }
 
     public ObservableCollection<Arsenal> Guns { get; set; }
+    public ObservableCollection<Protocol.Models.Program> MyPrograms { get; set; }
 
-    public ProcessPage(XClient client, ObservableCollection<UserInPage> users, ObservableCollection<Arsenal> guns)
+    public ProcessPage(XClient client, 
+        ObservableCollection<UserInPage> users, 
+        ObservableCollection<Arsenal> guns, 
+        Queue<Protocol.Models.Program> programs)
 	{
 		InitializeComponent();
 		Client = client;
 		Users = users;
+        Programs = programs;
         Guns = guns;
+        MyPrograms = new ObservableCollection<Protocol.Models.Program>();
         Messages = new ObservableCollection<Message>();
 
         PathImageRole = Client.Person.Role.ResourceImage;
@@ -43,17 +56,22 @@ public partial class ProcessPage : ContentPage, PageClient
 
         Players.ItemsSource = Users.Where(x => x.Role.Name != LabelRole);
         
-
         BindingContext = this;
-        IsRunning = true;
 	}
 
     public async void FinishStepClicked(object sender, EventArgs e)
     {
-        await Client.SendPacket(new XPacket
+        if (Client.Person.IsMyMove)
         {
-            Action = XPacketActions.FinishStep,
-        });
+            await Client.SendPacket(new XPacket
+            {
+                Action = XPacketActions.FinishStep,
+            });
+        }
+        else
+        {
+            DisplayAlert("Вы сейчас не ходите", "Дождитесь своего хода", "ОК");
+        }
     }
 
     public async void ChangeData(XPacket packet)
@@ -77,8 +95,10 @@ public partial class ProcessPage : ContentPage, PageClient
                             Messages.Add(new Message()
                             {
                                 Color = Colors.Aqua,
-                                MessageText = packet.Content.ToString()
+                                MessageText = packet.Content.ToString()    
                             });
+                            if (!Client.Person.IsMyMove)
+                                Programs.Dequeue();
                         }
                         else
                         {
@@ -95,6 +115,7 @@ public partial class ProcessPage : ContentPage, PageClient
             case XPacketActions.AddUser:
                 {
                     var persons = (List<Player>)packet.Content;
+                    Client.Players = persons;
                     Client.Person = persons.Where(p => p.ID == Client.Person.ID).FirstOrDefault();
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
@@ -121,7 +142,16 @@ public partial class ProcessPage : ContentPage, PageClient
 
             case XPacketActions.TakeProgram:
                 {
-                    // Взять программу
+                    var program = Programs.Dequeue();
+
+                    
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        DisplayAlert("Вы берете программу", $"Вы не можете не взять программу\n{program}", "ОК");
+                        Client.Person.MyPrograms.Add(program);
+                        MyPrograms.Add(program);
+                    });
+
                     await Client.SendPacket(new XPacket()
                     {
                         Action = XPacketActions.TakeProgram,
@@ -187,6 +217,110 @@ public partial class ProcessPage : ContentPage, PageClient
         }
     }
 
+    public async void ProgramClicked(object sender, EventArgs e)
+    {
+        var image = (Button)sender;
+        var program = (Protocol.Models.Program)image.BindingContext;
+        if (Client.Person.IsMyMove)
+        {
+            if (await DisplayAlert("Вы взяли программу", $"{program}", "Использовать", "Назад"))
+            {
+                await ApplyProgram(program);
+            }
+        }
+        else
+        {
+            DisplayAlert("Вы взяли программу", $"{program}", "Назад");
+        }
+    }
+
+    public async void TakeProgram(object sender, EventArgs e)
+    {
+        var image = (Button)sender;
+        var program = (Protocol.Models.Program)image.BindingContext;
+
+        if (await DisplayAlert("Программа", $"{program}", "Использовать", "Назад"))
+        {
+
+        }
+    }
+
+    private async Task ApplyProgram(Protocol.Models.Program program)
+    {
+        ApplyCurrentProgram = program;
+        switch (program.ProgramAction)
+        {
+            case ApplyPrograms.RoleExchange:
+                {
+                    IsRoleExchange = true;
+                    IsFinishProgram = false;
+                    await DisplayAlert("Вы используете программу", "Выберите из списка две роли", "ОК");
+                    break;
+                }
+
+            case ApplyPrograms.OpenAccessNewWeapons:
+                {
+                    foreach (var gun in Guns)
+                        if (gun is FlareGun || gun is Laser)
+                            gun.IsAvailable = true;
+
+                    await Client.SendPacket(new XPacket()
+                    {
+                        Action = XPacketActions.SendMessage,
+                        Type = XPacketTypes.Program,
+                        Content = $"{Client.Person.Name} применил программу:\n{ApplyCurrentProgram}"
+                    });
+                    IsFinishProgram = true;
+                    break;
+                }
+
+            case ApplyPrograms.ChangeDirectionEveryoneWeapons:
+                {
+                    await Client.SendPacket(new XPacket()
+                    {
+                        Action = XPacketActions.ApplyProgram,
+                        Type = XPacketTypes.Program,
+                        Content = new ApplyProgramSend() 
+                        {
+                            Program = ApplyCurrentProgram
+                        }
+                    });
+                    IsFinishProgram = true;
+                    break;
+                }
+
+            case ApplyPrograms.GeneralPain:
+                {
+                    
+                    break;
+                }
+        }
+    }
+
+    public async void FinishProgramClicked(object sender, EventArgs e)
+    {
+        if (IsFinishProgram) return;
+        switch (ApplyCurrentProgram.ProgramAction)
+        {
+            case ApplyPrograms.RoleExchange:
+                {
+                    if (RolesExchange.Count() == 2)
+                        await Client.SendPacket(new XPacket
+                        {
+                            Action = XPacketActions.ApplyProgram,
+                            Type = XPacketTypes.Program,
+                            Content = new ApplyProgramSend()
+                            {
+                                Program = ApplyCurrentProgram,
+                                Data = RolesExchange
+                            }
+                        });
+                    RolesExchange.Clear();
+                    break;
+                }
+        }
+    }
+
     private async Task OpenCardOrLostHealth(XPacketActions action, int lostHealthPoints)
     {
         
@@ -212,7 +346,7 @@ public partial class ProcessPage : ContentPage, PageClient
             {
                 await Client.SendPacket(new XPacket()
                 {
-                    Action = XPacketActions.LostHealtPoints,
+                    Action = XPacketActions.LostHealthPoints,
                     Type = XPacketTypes.HealthPoints,
                     Content = lostHealthPoints
                 });
@@ -234,7 +368,7 @@ public partial class ProcessPage : ContentPage, PageClient
             {
                 await Client.SendPacket(new XPacket()
                 {
-                    Action = XPacketActions.LostHealtPoints,
+                    Action = XPacketActions.LostHealthPoints,
                     Type = XPacketTypes.HealthPoints,
                     Content = lostHealthPoints
                 });
@@ -271,8 +405,20 @@ public partial class ProcessPage : ContentPage, PageClient
         var image = (ImageButton)sender;
         var user = (UserInPage)image.BindingContext;
 
-        if (Client.Person.IsYourMove || user.Role.IsAvailable)
+        if (Client.Person.IsMyMove || user.Role.IsAvailable)
         {
+            if (IsRoleExchange)
+            {
+                if (RolesExchange.Count() == 2)
+                    await DisplayAlert("Карта роли", "Вы больше не можете использовать карту замены ролей", "Назад");
+                
+                if (await DisplayAlert("Карта роли", "Поменять взять эту карту для замены ролей", "Да", "Нет"))
+                {
+                    RolesExchange.Add(user.ID);
+                    return;
+                }
+            }
+
             if (!await DisplayAlert("Карта роли", "Вы можете посмотреть одну карту, но больше нельзя", "Смотреть", "Назад"))
                 return;
 
@@ -293,7 +439,7 @@ public partial class ProcessPage : ContentPage, PageClient
         var image = (ImageButton)sender;
         var user = (UserInPage)image.BindingContext;
 
-        if (Client.Person.IsYourMove || user.FirstCard.IsAvailable)
+        if (Client.Person.IsMyMove || user.FirstCard.IsAvailable)
         {
             var description = $"{user.FirstCard.Name} X{user.FirstCard.Score}";
             DisplayAlert($"Карта верности игрока {user.Role.Name}", description, "OK");
@@ -305,7 +451,7 @@ public partial class ProcessPage : ContentPage, PageClient
         var image = (ImageButton)sender;
         var user = (UserInPage)image.BindingContext;
 
-        if (Client.Person.IsYourMove || user.SecondCard.IsAvailable)
+        if (Client.Person.IsMyMove || user.SecondCard.IsAvailable)
         {
             var description = $"{user.SecondCard.Name} X{user.SecondCard.Score}";
             DisplayAlert($"Карта верности игрока {user.Role.Name}", description, "OK");
@@ -319,7 +465,7 @@ public partial class ProcessPage : ContentPage, PageClient
         var description = $"\n{gun.Description}\nВыстрел\n{gun.Shot}";
 
         bool result;
-        if (Client.Person.IsYourMove && gun.IsAvailable)
+        if (Client.Person.IsMyMove && gun.IsAvailable)
             result = await DisplayAlert($"Оружие {gun.Name}", description, "Взять", "Не брать");
         else
         {
@@ -341,7 +487,7 @@ public partial class ProcessPage : ContentPage, PageClient
 
     public async void NameClicked(object sender, EventArgs e)
     {
-        if (Client.Person.IsYourMove)
+        if (Client.Person.IsMyMove)
         {
             var image = (Button)sender;
             var user = (UserInPage)image.BindingContext;
@@ -362,6 +508,7 @@ public partial class ProcessPage : ContentPage, PageClient
                             Type = XPacketTypes.Person,
                             Content = user.ID
                         });
+                        Client.Person.Gun = null;
                     }
                 }
                 else

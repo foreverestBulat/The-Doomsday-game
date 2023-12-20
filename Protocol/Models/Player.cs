@@ -18,10 +18,13 @@ public class Player
     public Role Role { get; set; }
     public Loyalty FirstCard { get; set; }
     public Loyalty SecondCard { get; set; }
-    public bool IsYourMove { get; set; }
+    public bool IsMyMove { get; set; }
     public Arsenal Gun { get; set; }
     public int HealthPoints { get; set; }
     public bool IsWatchCard { get; set; }
+    public List<Program> MyPrograms { get; set; }
+    public List<Arsenal> GunsIsPointedMe = new List<Arsenal>();
+    public bool IsGeneralPain = false;
 
 
     public override string ToString()

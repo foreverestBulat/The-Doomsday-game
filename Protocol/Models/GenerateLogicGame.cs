@@ -11,6 +11,16 @@ public class GenerateLogicGame
 {
     private static Random Random = new Random();
 
+    public static Queue<Program> GetPrograms()
+    {
+        var programs = Program.Programs;
+        Shuffle(programs);
+        var queuePrograms = new Queue<Program>();
+        foreach (Program program in programs)
+            queuePrograms.Enqueue(program);
+        return queuePrograms;
+    }
+
     public static void SetRolePlayers(List<Player> players)
     {
         (int countHumans, int countRobots, int countOutcasts) = GetCountRoles(players.Count);
@@ -38,14 +48,14 @@ public class GenerateLogicGame
         foreach (var player in players)
             player.Role = roles[i++];
 
-        var numIsFirstMove = Random.Next(0, players.Count - 1);
-        Console.WriteLine(numIsFirstMove);
-        players[numIsFirstMove].IsYourMove = true;
+        //var numIsFirstMove = Random.Next(0, players.Count - 1);
+        //Console.WriteLine(numIsFirstMove);
+        //players[numIsFirstMove].IsMyMove = true;
 
-        //foreach (var player in players)
-        //{
-        //    player.IsYourMove = true;//
-        //}
+        foreach (var player in players)
+        {
+            player.IsMyMove = true;//
+        }
 
         (int countX1Humans,
         int countX1Robots,
